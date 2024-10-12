@@ -2,6 +2,9 @@ import speech_recognition as sr
 import pyttsx3
 import pywhatkit
 import datetime
+import wikipedia
+import pyjokes
+import requests
 
 listener = sr.Recognizer()
 engine = pyttsx3.init()
@@ -16,38 +19,56 @@ def take_command():
     try:
         with sr.Microphone() as source:
             print('Listening...')
-            voice = listener.listen(source,timeout=5)
+            voice = listener.listen(source)
             command = listener.recognize_google(voice)
             command = command.lower()
-            if 'alexa' in command:
-                command = command.replace('alexa', '').strip()
+            if 'antony' in command:
+                command = command.replace('antony', '')
                 print(command)
-                return command
-    except Exception as e:
-        print(f"Error: {e}")  # Print the error for debugging
-    return ""  # Return empty string if there was an error
+    except:
+        pass
+    return command
 
-def run_alexa():
-    command = take_command()
-    if command:  # Proceed only if the command is not empty
-        print(command)
-        if 'play' in command:
-            song = command.replace('play', '').strip()
-            talk('Playing ' + song)
-            pywhatkit.playonyt(song)
-        elif 'time' in command:
-            time = datetime.datetime.now().strftime('%I:%M %p')
-            talk('Current time is ' + time)
-        elif 'stop' in command:
-            talk('Exiting...')
-            return False  # Return False to stop the loop
+def get_news():
+    try:
+        api_key = 'your_news_api_key_here'
+        url = f'https://newsapi.org/v2/top-headlines?country=in&apiKey={api_key}'
+        response = requests.get(url)
+        articles = response.json().get('articles', [])
+        if articles:
+            talk('Here are some top news headlines:')
+            for article in articles[:3]:
+                talk(article['title'])
         else:
-            talk('Please say the command again.')
+            talk('Sorry, I am unable to fetch news at the moment.')
+    except Exception as e:
+        print("Error fetching news:", e)
+        talk('There was an error fetching the news.')
+
+def run_antony():
+    command = take_command()
+    print(command)
+    if 'play' in command:
+        song = command.replace('play', '')
+        talk('Playing ' + song)
+        pywhatkit.playonyt(song)
+    elif 'time' in command:
+        time = datetime.datetime.now().strftime('%I:%M %p')
+        talk('Current time is ' + time)
+    elif 'who is' in command:
+        person = command.replace('who is', '')
+        info = wikipedia.summary(person, 1)
+        print(info)
+        talk(info)
+    elif 'news' in command:
+        get_news()
+    elif 'joke' in command:
+        talk(pyjokes.get_joke())
+    elif 'how are you' in command:
+        talk('I am feeling great, thank you!')
     else:
-        talk('I did not catch that. Please repeat your command.')
-    return True  # Return True to continue the loop
+        talk('Please say the command again.')
 
 while True:
-    if not run_alexa():
-        break  # Exit the loop if 'stop' is commanded
+    run_antony()
 
