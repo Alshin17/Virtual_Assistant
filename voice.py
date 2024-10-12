@@ -31,7 +31,7 @@ def take_command():
 
 def get_news():
     try:
-        api_key = 'your_news_api_key_here'
+        api_key = '78bb599f57d54ae9ae640ab25d9f880e'
         url = f'https://newsapi.org/v2/top-headlines?country=in&apiKey={api_key}'
         response = requests.get(url)
         articles = response.json().get('articles', [])
