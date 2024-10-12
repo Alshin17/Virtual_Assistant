@@ -9,7 +9,7 @@ import requests
 listener = sr.Recognizer()
 engine = pyttsx3.init()
 voices = engine.getProperty('voices')
-engine.setProperty('voice', voices[0].id)
+engine.setProperty('voice', voices[1].id)
 
 def talk(text):
     engine.say(text)
@@ -31,7 +31,7 @@ def take_command():
 
 def get_news():
     try:
-        api_key = '78bb599f57d54ae9ae640ab25d9f880e'
+        api_key = 'my API key here'  #my api key
         url = f'https://newsapi.org/v2/top-headlines?country=in&apiKey={api_key}'
         response = requests.get(url)
         articles = response.json().get('articles', [])
@@ -45,9 +45,20 @@ def get_news():
         print("Error fetching news:", e)
         talk('There was an error fetching the news.')
 
+def analyze_mood(command):
+    """Analyze the mood based on the command."""
+    if 'happy' in command or 'great' in command or 'good' in command:
+        return 'happy'
+    elif 'sad' in command or 'bad' in command or 'angry' in command:
+        return 'sad'
+    else:
+        return 'neutral'
+
 def run_antony():
     command = take_command()
     print(command)
+    mood = analyze_mood(command)  # Analyze mood based on the command
+
     if 'play' in command:
         song = command.replace('play', '')
         talk('Playing ' + song)
@@ -65,10 +76,14 @@ def run_antony():
     elif 'joke' in command:
         talk(pyjokes.get_joke())
     elif 'how are you' in command:
-        talk('I am feeling great, thank you!')
+        if mood == 'happy':
+            talk('I am glad to hear you are happy!')
+        elif mood == 'sad':
+            talk('I’m sorry to hear that. I’m here for you.')
+        else:
+            talk('I am feeling great, thank you!')
     else:
         talk('Please say the command again.')
 
 while True:
     run_antony()
-
