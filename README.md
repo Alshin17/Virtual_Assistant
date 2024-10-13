@@ -1,4 +1,4 @@
-# Antony - Voice Assistant
+# Antony - Voice Assistant(Python)
 
 ## Overview
 Antony is a Python-based voice assistant that responds to voice commands, plays music, tells the time, and even shares news updates and mood-based responses. Designed to be interactive and engaging, Antony uses various Python libraries to understand user inputs and respond dynamically.
